@@ -19,6 +19,7 @@ NAME = 'simple_ls'
 VERSION = '0.0.1'
 DESCRIPTION = '''This is a simple analog of command 'ls' on Linux.'''
 EPILOG = '(c) Elena Kiseleva'
+CURRENT_DIR = os.getcwd()
 
 
 def parse_arguments():
@@ -32,7 +33,7 @@ def parse_arguments():
                         help='do not ignore entries starting with .')
     parser.add_argument('-l', action='store_true',  # default=True,
                         help='use a long listing format')
-    parser.add_argument('-S', action='store_true',  # default=True,
+    parser.add_argument('-S', action='store_true',  default=True,
                         help='sort by file size, largest first')
 
     # TODO: look at subparser
@@ -54,11 +55,10 @@ def main():
     print(args)
 
     # Analise given files and directories, collect them
-    current_dir = os.getcwd()
     files = []
     directories = {}
     for item in args.file:
-        full_path = os.path.join(current_dir, item)
+        full_path = os.path.join(CURRENT_DIR, item)
         if os.path.isfile(full_path):
             files.append(item)
         elif os.path.isdir(full_path):
@@ -68,6 +68,13 @@ def main():
             return
 
     # If not -a  - remove hidden
+    # Логичнее было бы проверять 'not args.a' сделать флаг True по умолчанию,
+    # но хотелось попробовать проверить отсутствие флага.
+    if args.a:
+        files = [file for file in files if not file.startswith('.')]
+        for item in directories:
+            directories[item] = [d for d in directories[item]
+                                 if not d.startswith('.')]
 
     # If -S   - sort in size
 
