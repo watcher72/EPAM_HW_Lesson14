@@ -49,6 +49,11 @@ def parse_arguments():
     return args
 
 
+def get_file_size(x):
+    """Return a size of given file in some directory"""
+    return os.path.getsize(os.path.join(CURRENT_DIR, x))
+
+
 def main():
     # Parse the arguments
     args = parse_arguments()
@@ -76,7 +81,14 @@ def main():
             directories[item] = [d for d in directories[item]
                                  if not d.startswith('.')]
 
-    # If -S   - sort in size
+    # If -S   - sort by size
+    if args.S:
+        files = sorted(files, key=get_file_size)
+        for d in directories:
+            directories[d] = sorted(
+                directories[d],
+                key=lambda x: get_file_size(os.path.join(d, x))
+            )
 
     # If -l  - show long info
 
