@@ -9,10 +9,11 @@ If not files or directories given, show information about current directory.
 """
 import argparse
 import os
+import shutil
 # import stat
 # from datetime import datetime as dt
 
-from pprint import pprint as pp
+# from pprint import pprint as pp
 
 
 NAME = 'simple_ls'
@@ -33,25 +34,92 @@ def parse_arguments():
                         help='do not ignore entries starting with .')
     parser.add_argument('-l', action='store_true',  # default=True,
                         help='use a long listing format')
-    parser.add_argument('-S', action='store_true',  default=True,
+    parser.add_argument('-S', action='store_true',  # default=True,
                         help='sort by file size, largest first')
 
     # TODO: look at subparser
-    # parser.add_argument('--format',
-    #                     choices=['long', 'single-column', 'horizontal',
-    #                              'vertical', 'across', 'verbose'],
-    #                     default='vertical',
-    #                     help='define the format of output information')
-    # parser.add_argument('--color', choices=['always', 'auto', 'never'], default='never',
-    #                     help='sort by file size, largest first')
+    parser.add_argument('--format',
+                        choices=['long', 'single-column',
+                                 'horizontal', 'vertical',
+                                 'across', 'verbose'],
+                        default='horizontal',
+                        help='define the format of output information')
+    # parser.add_argument('--format', '-1', type=str, default='single-column',
+    #                     help='output information in one colimn')
+    parser.add_argument('--color', choices=['always', 'auto', 'never'], default='never',
+                        help='sort by file size, largest first')
 
     args = parser.parse_args()
     return args
 
 
-def get_file_size(x):
-    """Return a size of given file in some directory"""
-    return os.path.getsize(os.path.join(CURRENT_DIR, x))
+def print_in_columns_horizontal(files, columns, col_width):
+    full_rows = len(files) // columns
+    full_columns = len(files) % columns
+    for i in range(full_rows):
+        row = ' '.join(f'{files[i * columns + j]:{col_width}}'
+                       for j in range(columns))
+        print(row)
+    print(' '.join(f'{files[full_rows * columns + j]:{col_width}}'
+                      for j in range(full_columns)))
+    print()
+
+
+# TODO
+def print_in_columns_vertical(files, columns, col_width):
+    print(len(files), columns)
+    total_rows = (len(files) // columns + 1
+                  if len(files) % columns
+                  else len(files) // columns)
+    full_rows = -(len(files) - total_rows * columns)
+
+    print(full_rows, total_rows)
+    for i in range(full_rows):
+        row = ' '.join(f'{files[i + j * total_rows]:{col_width}}' for j in range(columns))
+        print(row)
+    for i in range(full_rows, total_rows):
+        row = ' '.join(f'{files[i + j * total_rows]:{col_width}}' for j in range(columns - 1))
+        print(row)
+
+
+def short_info(files, directories, args):
+    max_length = 0
+    if directories:
+        max_length = max(max(len(item) for item in directories[d])
+                         for d in directories)
+    if files:
+        max_length = max(max_length, max(len(item) for item in files))
+    terminal_width = shutil.get_terminal_size().columns
+    if args.format == 'single-column':
+        columns = 1
+    else:
+        columns = terminal_width // (max_length + 1) or 1
+
+    if files:
+        if args.format == 'vertical':
+            print_in_columns_vertical(files, columns, max_length + 1)
+        else:
+            print_in_columns_horizontal(files, columns, max_length + 1)
+        print()
+    if not files and len(directories) == 1:
+        if args.format == 'vertical':
+            print_in_columns_vertical(files, columns, max_length + 1)
+        else:
+            print_in_columns_horizontal(directories[0], columns, max_length + 1)
+        print()
+        return
+    for item in directories:
+        print(f'{item}:')
+        if args.format == 'vertical':
+            print_in_columns_vertical(files, columns, max_length + 1)
+        else:
+            print_in_columns_horizontal(directories[item], columns, max_length + 1)
+        print()
+
+
+def full_info(files, directories, args):
+    print('Must be printed in vertical order columns!!')
+    pass
 
 
 def main():
@@ -83,19 +151,25 @@ def main():
 
     # If -S   - sort by size
     if args.S:
-        files = sorted(files, key=get_file_size)
+        files = sorted(
+            files,
+            key=lambda x: os.path.getsize(os.path.join(CURRENT_DIR, x))
+        )
         for d in directories:
             directories[d] = sorted(
                 directories[d],
-                key=lambda x: get_file_size(os.path.join(d, x))
+                key=lambda x: os.path.getsize(os.path.join(CURRENT_DIR, d, x))
             )
 
-    # If -l  - show long info
+    # If -l  - show long info, else  - show short info
+    if args.l:
+        full_info(files, directories, args)
+    else:
+        short_info(files, directories, args)
 
-    # else  - show short info
-    print(files)
-    pp(directories)
-    pass
+    # print(files)
+    # print(directories)
+    return
 
 
 if __name__ == '__main__':
