@@ -7,6 +7,7 @@ It has some options:
 -S  - sort the list on the file size
 --block-size  - output the size as the number of blocks of given size
 -1  - output information in one column
+--log  - define the file for output logging information
 --format  - define, how will be output the information:
             'long' - output full info
             'single-column' - output in single column
@@ -83,7 +84,7 @@ def main():
     # Parse the arguments
     args = parse_arguments()
 
-    # Create logger
+    # Create debug logger
     log = create_debug_logger(args.log) if args.log else create_debug_logger()
 
     log.debug(args)

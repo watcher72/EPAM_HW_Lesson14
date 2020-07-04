@@ -2,19 +2,21 @@ import shutil
 from math import ceil
 
 
-def print_in_columns_horizontal(files, columns, col_width):
+def columns_horizontal(files, columns, col_width):
+    temp_info = []
     full_rows = len(files) // columns
     full_columns = len(files) % columns
     for i in range(full_rows):
         row = ' '.join(f'{files[i * columns + j]:{col_width}}'
                        for j in range(columns))
-        print(row)
-    print(' '.join(f'{files[full_rows * columns + j]:{col_width}}'
-                      for j in range(full_columns)))
-    print()
+        temp_info.append(row)
+    temp_info.append(' '.join(f'{files[full_rows * columns + j]:{col_width}}'
+                              for j in range(full_columns)))
+    temp_info.append('\n')
+    return temp_info
 
 
-def print_in_columns_vertical(files, columns, col_width):
+def columns_vertical(files, columns, col_width):
     temp_info = []
     total_rows = ceil(len(files) / columns)
     columns = ceil(len(files) / total_rows)
@@ -31,6 +33,8 @@ def print_in_columns_vertical(files, columns, col_width):
 
 
 def handle_short_info(files, directories, args):
+    result_info = []
+    # Define the width of columns
     max_length = 0
     if directories:
         max_length = max(max(len(item) for item in directories[d])
@@ -45,27 +49,38 @@ def handle_short_info(files, directories, args):
 
     if files:
         if args.format == 'commas':
-            print(', '.join([item for item in files]))
+            result_info.append(', '.join([item for item in files]))
         elif args.format == 'vertical' or args.format == 'across':
-            print_in_columns_vertical(files, columns, max_length + 1)
+            result_info.extend(
+                columns_vertical(files, columns, max_length + 1)
+            )
         else:
-            print_in_columns_horizontal(files, columns, max_length + 1)
+            result_info.extend(
+                columns_horizontal(files, columns, max_length + 1)
+            )
     if not files and len(directories) == 1:
         d = list(directories.keys())[0]
         if args.format == 'commas':
-            print(', '.join([item for item in directories[d]]))
+            result_info.append(', '.join([item for item in directories[d]]))
         elif args.format == 'vertical' or args.format == 'across':
-            print_in_columns_vertical(directories[d], columns, max_length + 1)
+            result_info.extend(
+                columns_vertical(directories[d], columns, max_length + 1)
+            )
         else:
-            print_in_columns_horizontal(directories[d],
-                                        columns, max_length + 1)
+            result_info.extend(
+                columns_horizontal(directories[d], columns, max_length + 1)
+            )
         return
     for d in directories:
-        print(f'{d}:')
+        result_info.append(f'{d}:')
         if args.format == 'commas':
-            print(', '.join([item for item in directories[d]]))
+            result_info.append(', '.join([item for item in directories[d]]))
         elif args.format == 'vertical' or args.format == 'across':
-            print_in_columns_vertical(directories[d], columns, max_length + 1)
+            result_info.extend(
+                columns_vertical(directories[d], columns, max_length + 1)
+            )
         else:
-            print_in_columns_horizontal(directories[d], columns, max_length + 1)
-    return
+            result_info.extend(
+                columns_horizontal(directories[d], columns, max_length + 1)
+            )
+    return result_info

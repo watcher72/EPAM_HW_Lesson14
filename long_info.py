@@ -6,7 +6,8 @@ from math import ceil
 from constants import CURRENT_DIR
 
 
-def print_full_info(files, args, dir_='.'):
+def full_info(files, args, dir_='.'):
+    temp_info = []
     for item in files:
         f_info = {}
         f_st = os.stat(os.path.join(CURRENT_DIR, dir_, item))
@@ -24,22 +25,23 @@ def print_full_info(files, args, dir_='.'):
             date_format = '%b %d %I:%M'
         f_info['time'] = f'{date.strftime(date_format)} '
         f_info['name'] = f'{item:<}'
-        row = ' '.join([f_info['mpde'], f_info['nlink'], f_info['uid'],
-                        f_info['size'], f_info['time'], f_info['name']])
-        print(row)
+        temp_info.append(
+            ' '.join([f_info['mpde'], f_info['nlink'], f_info['uid'],
+                      f_info['size'], f_info['time'], f_info['name']])
+        )
+    temp_info.append('\n')
+    return temp_info
 
 
 def handle_full_info(files, directories, args):
+    result_info = []
     if files:
-        print_full_info(files, args)
-        print()
+        result_info.extend(full_info(files, args))
     if not files and len(directories) == 1:
         d = list(directories.keys())[0]
-        print_full_info(directories[d], args, d)
-        print()
-        return
+        result_info.extend(full_info(directories[d], args, d))
+        return result_info
     for d in directories:
-        print(f'{d}:')
-        print_full_info(directories[d], args, d)
-        print()
-    return
+        result_info.append(f'{d}:')
+        result_info.extend(full_info(directories[d], args, d))
+    return result_info
