@@ -1,4 +1,5 @@
 import shutil
+from math import ceil
 
 
 def print_in_columns_horizontal(files, columns, col_width):
@@ -13,22 +14,20 @@ def print_in_columns_horizontal(files, columns, col_width):
     print()
 
 
-# TODO: calculate rows and columns
 def print_in_columns_vertical(files, columns, col_width):
-    print('Must be printed in vertical ordered columns')
-    # print(len(files), columns)
-    # total_rows = (len(files) // columns + 1
-    #               if len(files) % columns
-    #               else len(files) // columns)
-    # full_rows = -(len(files) - total_rows * columns)
-    #
-    # print(full_rows, total_rows)
-    # for i in range(full_rows):
-    #     row = ' '.join(f'{files[i + j * total_rows]:{col_width}}' for j in range(columns))
-    #     print(row)
-    # for i in range(full_rows, total_rows):
-    #     row = ' '.join(f'{files[i + j * total_rows]:{col_width}}' for j in range(columns - 1))
-    #     print(row)
+    temp_info = []
+    total_rows = ceil(len(files) / columns)
+    columns = ceil(len(files) / total_rows)
+    full_rows = (total_rows if len(files) % total_rows == 0
+                 else len(files) % total_rows)
+    for i in range(full_rows):
+        temp_info.append(' '.join(f'{files[i + j * total_rows]:{col_width}}'
+                                  for j in range(columns)))
+    for i in range(full_rows, total_rows):
+        temp_info.append(' '.join(f'{files[i + j * total_rows]:{col_width}}'
+                                  for j in range(columns - 1)))
+    temp_info.append('\n')
+    return temp_info
 
 
 def handle_short_info(files, directories, args):
