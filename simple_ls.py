@@ -38,7 +38,8 @@ def parse_arguments():
                         help='do not ignore entries starting with "."')
     parser.add_argument('-S', action='store_true',
                         help='sort by file size, largest first')
-    parser.add_argument('--block-size', type=int, nargs='?', default=1024,
+    parser.add_argument('-laS')
+    parser.add_argument('--block-size', type=int, nargs='?', default=None,
                         help=('show the size as a number of blocks '
                               'of given size'))
     parser.add_argument('-1', dest='one', action='store_true',
