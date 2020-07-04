@@ -22,7 +22,7 @@ import os
 
 from short_info import handle_short_info
 from long_info import handle_full_info
-from constants import NAME, DESCRIPTION, EPILOG, CURRENT_DIR
+from constants import NAME, DESCRIPTION, EPILOG, VERSION, CURRENT_DIR
 
 
 def parse_arguments():
@@ -44,14 +44,16 @@ def parse_arguments():
                               'of given size'))
     parser.add_argument('-1', dest='one', action='store_true',
                         help='output information in one column')
+    # TODO: look at subparser or group
     parser.add_argument('--format',
                         choices=['long', 'single-column', 'commas',
                                  'horizontal', 'vertical', 'across'],
                         default='horizontal',
                         help='define the format of output information')
-    # TODO: look at subparser; how to handlle -1
     # parser.add_argument('--color', choices=['always', 'auto', 'never'], default='never',
     #                     help='sort by file size, largest first')
+    parser.add_argument('-v', '--version', action='version',
+                        help='Version', version='%(prog)s {}'.format(VERSION))
 
     args = parser.parse_args()
     return args
