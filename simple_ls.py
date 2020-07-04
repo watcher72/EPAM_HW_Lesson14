@@ -22,14 +22,7 @@ import os
 
 from short_info import handle_short_info
 from long_info import handle_full_info
-
-
-NAME = 'simple_ls'
-VERSION = '0.0.1'
-DESCRIPTION = '''This is a simple analog of command 'ls' on Linux.'''
-EPILOG = '(c) Elena Kiseleva'
-
-CURRENT_DIR = os.getcwd()
+from constants import NAME, DESCRIPTION, EPILOG, CURRENT_DIR
 
 
 def parse_arguments():

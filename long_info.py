@@ -3,8 +3,7 @@ import os
 import stat
 from math import ceil
 
-
-CURRENT_DIR = os.getcwd()
+from constants import CURRENT_DIR
 
 
 def print_full_info(files, args, dir_='.'):
