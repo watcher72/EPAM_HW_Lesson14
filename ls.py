@@ -6,6 +6,7 @@ It has some options:
 -a  - includes all hidden files or directories, which start with '.'
 -S  - sort the list on the file size
 --block-size  - output the size as the number of blocks of given size
+-1  - output information in one column
 --format  - define, how will be output the information:
             'long' - output full info
             'single-column' - output in single column
@@ -16,8 +17,8 @@ It has some options:
 If not files or directories given, show information about current directory.
 """
 import argparse
+import logging
 import os
-
 # from pprint import pprint as pp
 
 from short_info import handle_short_info
@@ -28,7 +29,7 @@ from constants import NAME, DESCRIPTION, EPILOG, VERSION, CURRENT_DIR
 def parse_arguments():
     """Parse the arguments from command line."""
     parser = argparse.ArgumentParser(
-        prog=NAME, description=DESCRIPTION, epilog=EPILOG,  # add_help=False
+        prog=NAME, description=DESCRIPTION, epilog=EPILOG
     )
     parser.add_argument('file', type=str, nargs='*', default='.',
                         help='Files and/or directories')
@@ -44,11 +45,13 @@ def parse_arguments():
                               'of given size'))
     parser.add_argument('-1', dest='one', action='store_true',
                         help='output information in one column')
+    parser.add_argument('-log', type=str, nargs='?', default=None,
+                        help='define a file for logging')
     # TODO: look at subparser or group
     parser.add_argument('--format',
                         choices=['long', 'single-column', 'commas',
                                  'horizontal', 'vertical', 'across'],
-                        default='horizontal',
+                        default='vertical',
                         help='define the format of output information')
     # parser.add_argument('--color', choices=['always', 'auto', 'never'], default='never',
     #                     help='sort by file size, largest first')
@@ -59,10 +62,31 @@ def parse_arguments():
     return args
 
 
+def create_debug_logger(file=None):
+    d_log = logging.getLogger('debug_log')
+    d_log.setLevel(logging.INFO)
+
+    d_log_formatter = logging.Formatter('%(message)s')
+
+    if file:
+        file_handler = logging.FileHandler(file, mode='w')
+        file_handler.setFormatter(d_log_formatter)
+        d_log.addHandler(file_handler)
+    else:
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(d_log_formatter)
+        d_log.addHandler(stream_handler)
+    return d_log
+
+
 def main():
     # Parse the arguments
     args = parse_arguments()
-    print(args)
+
+    # Create logger
+    log = create_debug_logger(args.log) if args.log else create_debug_logger()
+
+    log.debug(args)
 
     # Analise given files and directories, collect them
     files = []
@@ -97,15 +121,22 @@ def main():
                 directories[d],
                 key=lambda x: -os.path.getsize(os.path.join(CURRENT_DIR, d, x))
             )
+    log.debug(files)
+    log.debug(directories)
 
     # If -l  - show long info, else  - show short info
     if args.l or args.format == 'long':
-        handle_full_info(files, directories, args)
+        result = handle_full_info(files, directories, args)
     else:
-        handle_short_info(files, directories, args)
+        result = handle_short_info(files, directories, args)
 
-    # print(files)
-    # print(directories)
+    if args.log:
+        for item in result:
+            log.info(item)
+
+    for item in result:
+        print(item)
+
     return
 
 
