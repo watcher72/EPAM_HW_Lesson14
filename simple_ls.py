@@ -88,12 +88,12 @@ def main():
     if args.S:
         files = sorted(
             files,
-            key=lambda x: os.path.getsize(os.path.join(CURRENT_DIR, x))
+            key=lambda x: -os.path.getsize(os.path.join(CURRENT_DIR, x))
         )
         for d in directories:
             directories[d] = sorted(
                 directories[d],
-                key=lambda x: os.path.getsize(os.path.join(CURRENT_DIR, d, x))
+                key=lambda x: -os.path.getsize(os.path.join(CURRENT_DIR, d, x))
             )
 
     # If -l  - show long info, else  - show short info
