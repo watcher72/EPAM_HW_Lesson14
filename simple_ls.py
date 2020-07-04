@@ -32,23 +32,23 @@ def parse_arguments():
     )
     parser.add_argument('file', type=str, nargs='*', default='.',
                         help='Files and/or directories')
-    parser.add_argument('-l', action='store_true',  # default=True,
+    parser.add_argument('-l', action='store_true',
                         help='use a long listing format')
-    parser.add_argument('-a', '-all', action='store_false',  # default=False,
-                        help='do not ignore entries starting with .')
-    parser.add_argument('-S', action='store_true',  # default=True,
+    parser.add_argument('-a', '-all', action='store_false',
+                        help='do not ignore entries starting with "."')
+    parser.add_argument('-S', action='store_true',
                         help='sort by file size, largest first')
     parser.add_argument('--block-size', type=int, nargs='?', default=1024,
                         help=('show the size as a number of blocks '
-                              'of givem size'))
+                              'of given size'))
+    parser.add_argument('-1', dest='one', action='store_true',
+                        help='output information in one column')
     parser.add_argument('--format',
                         choices=['long', 'single-column', 'commas',
                                  'horizontal', 'vertical', 'across'],
                         default='horizontal',
                         help='define the format of output information')
     # TODO: look at subparser; how to handlle -1
-    # parser.add_argument('--format', '-1', type=str, default='single-column',
-    #                     help='output information in one column')
     # parser.add_argument('--color', choices=['always', 'auto', 'never'], default='never',
     #                     help='sort by file size, largest first')
 

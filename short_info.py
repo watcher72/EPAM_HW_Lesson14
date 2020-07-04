@@ -39,7 +39,7 @@ def handle_short_info(files, directories, args):
     if files:
         max_length = max(max_length, max(len(item) for item in files))
     terminal_width = shutil.get_terminal_size().columns
-    if args.format == 'single-column':
+    if args.format == 'single-column' or args.one:
         columns = 1
     else:
         columns = terminal_width // (max_length + 1) or 1
@@ -51,7 +51,6 @@ def handle_short_info(files, directories, args):
             print_in_columns_vertical(files, columns, max_length + 1)
         else:
             print_in_columns_horizontal(files, columns, max_length + 1)
-        print()
     if not files and len(directories) == 1:
         d = list(directories.keys())[0]
         if args.format == 'commas':
@@ -61,7 +60,6 @@ def handle_short_info(files, directories, args):
         else:
             print_in_columns_horizontal(directories[d],
                                         columns, max_length + 1)
-        print()
         return
     for d in directories:
         print(f'{d}:')
@@ -71,5 +69,4 @@ def handle_short_info(files, directories, args):
             print_in_columns_vertical(directories[d], columns, max_length + 1)
         else:
             print_in_columns_horizontal(directories[d], columns, max_length + 1)
-        print()
     return
