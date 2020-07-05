@@ -1,5 +1,9 @@
+import logging
 import shutil
 from math import ceil
+
+
+logger = logging.getLogger('debug_log.short_info')
 
 
 def columns_horizontal(files, columns, col_width):
@@ -47,17 +51,6 @@ def handle_short_info(files, directories, args):
     else:
         columns = terminal_width // (max_length + 1) or 1
 
-    if files:
-        if args.format == 'commas':
-            result_info.append(', '.join([item for item in files]))
-        elif args.format == 'vertical' or args.format == 'across':
-            result_info.extend(
-                columns_vertical(files, columns, max_length + 1)
-            )
-        else:
-            result_info.extend(
-                columns_horizontal(files, columns, max_length + 1)
-            )
     if not files and len(directories) == 1:
         d = list(directories.keys())[0]
         if args.format == 'commas':
@@ -70,7 +63,20 @@ def handle_short_info(files, directories, args):
             result_info.extend(
                 columns_horizontal(directories[d], columns, max_length + 1)
             )
-        return
+        logger.debug(result_info)
+        return result_info
+
+    if files:
+        if args.format == 'commas':
+            result_info.append(', '.join([item for item in files]))
+        elif args.format == 'vertical' or args.format == 'across':
+            result_info.extend(
+                columns_vertical(files, columns, max_length + 1)
+            )
+        else:
+            result_info.extend(
+                columns_horizontal(files, columns, max_length + 1)
+            )
     for d in directories:
         result_info.append(f'{d}:')
         if args.format == 'commas':
@@ -83,4 +89,5 @@ def handle_short_info(files, directories, args):
             result_info.extend(
                 columns_horizontal(directories[d], columns, max_length + 1)
             )
+    logger.debug(result_info)
     return result_info

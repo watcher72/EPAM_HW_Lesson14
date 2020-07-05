@@ -1,52 +1,52 @@
--rw-rw-rw-   1   0     6672 Jul 01 05:53  urllist.txt
--rw-rw-rw-   1   0     3742 Jul 02 12:50  collectpreviews.py
+-rw-rw-rw-   1   0     6672 Jul 04 10:32  urllist.txt
+-rw-rw-rw-   1   0     3742 Jul 04 10:32  collectpreviews.py
 
 
 temp:
--rw-rw-rw-   1   0        0 Jul 03 03:28  .some_hidden.txt
+-rw-rw-rw-   1   0        0 Jul 04 10:32  .some_hidden.txt
 drwxrwxrwx   1   0        0 Jul 03 03:31  .some_hidden_folder
--rw-rw-rw-   1   0     2462 Jul 02 06:25  00000.jpeg
--rw-rw-rw-   1   0     3056 Jul 02 06:25  00001.jpeg
--rw-rw-rw-   1   0     3455 Jul 02 06:27  00002.jpeg
--rw-rw-rw-   1   0     3446 Jul 02 06:28  00003.jpeg
--rw-rw-rw-   1   0     2130 Jul 02 06:28  00004.jpeg
--rw-rw-rw-   1   0     3334 Jul 01 04:03  00006.jpeg
--rw-rw-rw-   1   0     2374 Jul 01 04:03  00007.jpeg
+-rw-rw-rw-   1   0     2462 Jul 04 10:32  00000.jpeg
+-rw-rw-rw-   1   0     3056 Jul 04 10:32  00001.jpeg
+-rw-rw-rw-   1   0     3455 Jul 04 10:32  00002.jpeg
+-rw-rw-rw-   1   0     3446 Jul 04 10:32  00003.jpeg
+-rw-rw-rw-   1   0     2130 Jul 04 10:32  00004.jpeg
+-rw-rw-rw-   1   0     3334 Jul 04 10:32  00006.jpeg
+-rw-rw-rw-   1   0     2374 Jul 04 10:32  00007.jpeg
 drwxrwxrwx   1   0        0 Jul 03 11:29  some_dir
 
 
 cli_args:
--rw-rw-rw-   1   0      252 Dec 11  2019  choices.py
--rw-rw-rw-   1   0      544 Dec 09  2019  cli_args.py
--rw-rw-rw-   1   0      220 Jul 02 06:22  cli_args_with_argparse.py
--rw-rw-rw-   1   0       24 Dec 11  2019  just_a_file.txt
--rw-rw-rw-   1   0      272 Dec 09  2019  list_params.py
--rw-rw-rw-   1   0      326 Dec 11  2019  multiple_named_params.py
--rw-rw-rw-   1   0      278 Dec 11  2019  multiple_params.py
--rw-rw-rw-   1   0      272 Dec 11  2019  param_file.py
--rw-rw-rw-   1   0      270 Dec 11  2019  param_flag.py
--rw-rw-rw-   1   0      249 Dec 11  2019  param_types.py
--rw-rw-rw-   1   0      804 Dec 11  2019  prog_description.py
+-rw-rw-rw-   1   0      252 Jul 04 10:32  choices.py
+-rw-rw-rw-   1   0      544 Jul 04 10:32  cli_args.py
+-rw-rw-rw-   1   0      220 Jul 04 10:32  cli_args_with_argparse.py
+-rw-rw-rw-   1   0       24 Jul 04 10:32  just_a_file.txt
+-rw-rw-rw-   1   0      272 Jul 04 10:32  list_params.py
+-rw-rw-rw-   1   0      326 Jul 04 10:32  multiple_named_params.py
+-rw-rw-rw-   1   0      278 Jul 04 10:32  multiple_params.py
+-rw-rw-rw-   1   0      272 Jul 04 10:32  param_file.py
+-rw-rw-rw-   1   0      270 Jul 04 10:32  param_flag.py
+-rw-rw-rw-   1   0      249 Jul 04 10:32  param_types.py
+-rw-rw-rw-   1   0      804 Jul 04 10:32  prog_description.py
 
 
 .:
-drwxrwxrwx   1   0     4096 Jul 04 10:27  .git
-drwxrwxrwx   1   0     4096 Jul 04 09:24  .idea
-drwxrwxrwx   1   0     4096 Jul 03 09:58  cli_args
--rw-rw-rw-   1   0     3742 Jul 02 12:50  collectpreviews.py
+drwxrwxrwx   1   0     4096 Jul 04 10:46  .git
+drwxrwxrwx   1   0     4096 Jul 04 11:28  .idea
+drwxrwxrwx   1   0     4096 Jul 04 10:32  cli_args
+-rw-rw-rw-   1   0     3742 Jul 04 10:32  collectpreviews.py
 -rw-rw-rw-   1   0      187 Jul 04 10:30  constants.py
--rw-rw-rw-   1   0        0 Jul 04 10:28  logfile.log
+-rw-rw-rw-   1   0        0 Jul 05 09:54  logfile.log
 drwxrwxrwx   1   0     4096 Jul 04 01:07  logging_lesson
 -rw-rw-rw-   1   0     1875 Jul 04 05:17  log_exeption.log
 -rw-rw-rw-   1   0     1586 Jul 04 09:20  long_info.py
--rw-rw-rw-   1   0     5478 Jul 04 10:07  ls.py
+-rw-rw-rw-   1   0     5541 Jul 04 10:39  ls.py
 -rw-rw-rw-   1   0      301 Jul 04 10:20  README.md
 -rw-rw-rw-   1   0        0 Jul 04 02:57  requiriments.txt
 -rw-rw-rw-   1   0     3315 Jul 04 09:20  short_info.py
 -rw-rw-rw-   1   0      123 Jul 04 06:29  some_module.py
-drwxrwxrwx   1   0     4096 Jul 03 03:31  temp
--rw-rw-rw-   1   0     4129 Jul 04 07:10  test.py
--rw-rw-rw-   1   0     6672 Jul 01 05:53  urllist.txt
+drwxrwxrwx   1   0     4096 Jul 04 10:32  temp
+-rw-rw-rw-   1   0     4097 Jul 04 11:17  test.py
+-rw-rw-rw-   1   0     6672 Jul 04 10:32  urllist.txt
 drwxrwxrwx   1   0        0 Jul 02 11:00  venv
 drwxrwxrwx   1   0     4096 Jul 04 10:15  __pycache__
 

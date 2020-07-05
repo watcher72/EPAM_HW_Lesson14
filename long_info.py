@@ -1,9 +1,13 @@
 import datetime as dt
+import logging
 import os
 import stat
 from math import ceil
 
 from constants import CURRENT_DIR
+
+
+logger = logging.getLogger('debug_log.long_info')
 
 
 def full_info(files, args, dir_='.'):
@@ -35,13 +39,16 @@ def full_info(files, args, dir_='.'):
 
 def handle_full_info(files, directories, args):
     result_info = []
-    if files:
-        result_info.extend(full_info(files, args))
     if not files and len(directories) == 1:
         d = list(directories.keys())[0]
         result_info.extend(full_info(directories[d], args, d))
+        logger.debug(result_info)
         return result_info
+
+    if files:
+        result_info.extend(full_info(files, args))
     for d in directories:
         result_info.append(f'{d}:')
         result_info.extend(full_info(directories[d], args, d))
+    logger.debug(result_info)
     return result_info
