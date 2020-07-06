@@ -1,0 +1,6 @@
+venv/
+.idea
+log_exeption.log
+some_module.py
+test.py
+logging_lesson/

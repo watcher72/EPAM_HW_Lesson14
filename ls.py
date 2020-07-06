@@ -18,13 +18,28 @@ It has some options:
 If not files or directories given, show information about current directory.
 """
 import argparse
+import datetime as dt
 import logging
 import os
+import shutil
+import stat
 # from pprint import pprint as pp
 
-from short_info import handle_short_info
-from long_info import handle_full_info
-from constants import NAME, DESCRIPTION, EPILOG, VERSION, CURRENT_DIR
+from math import ceil
+
+
+NAME = 'simple_ls'
+VERSION = '0.0.1'
+DESCRIPTION = '''This is a simple analog of command 'ls' on Linux.'''
+EPILOG = '(c) Elena Kiseleva'
+
+CURRENT_DIR = os.getcwd()
+
+
+log = logging.getLogger('debug_log')
+log.setLevel(logging.INFO)
+
+log_formatter = logging.Formatter('%(message)s')
 
 
 def parse_arguments():
@@ -48,7 +63,6 @@ def parse_arguments():
                         help='output information in one column')
     parser.add_argument('-log', type=str, nargs='?', default=None,
                         help='define a file for logging')
-    # TODO: look at subparser or group
     parser.add_argument('--format',
                         choices=['long', 'single-column', 'commas',
                                  'horizontal', 'vertical', 'across'],
@@ -63,21 +77,135 @@ def parse_arguments():
     return args
 
 
-def create_debug_logger(file=None):
-    d_log = logging.getLogger('debug_log')
-    d_log.setLevel(logging.INFO)
+def columns_horizontal(files, columns, col_width):
+    temp_info = []
+    full_rows = len(files) // columns
+    full_columns = len(files) % columns
+    for i in range(full_rows):
+        row = ' '.join(f'{files[i * columns + j]:{col_width}}'
+                       for j in range(columns))
+        temp_info.append(row)
+    temp_info.append(' '.join(f'{files[full_rows * columns + j]:{col_width}}'
+                              for j in range(full_columns)))
+    temp_info.append('\n')
+    return temp_info
 
-    d_log_formatter = logging.Formatter('%(message)s')
 
-    if file:
-        file_handler = logging.FileHandler(file, mode='w')
-        file_handler.setFormatter(d_log_formatter)
-        d_log.addHandler(file_handler)
+def columns_vertical(files, columns, col_width):
+    temp_info = []
+    total_rows = ceil(len(files) / columns)
+    columns = ceil(len(files) / total_rows)
+    full_rows = (total_rows if len(files) % total_rows == 0
+                 else len(files) % total_rows)
+    for i in range(full_rows):
+        temp_info.append(' '.join(f'{files[i + j * total_rows]:{col_width}}'
+                                  for j in range(columns)))
+    for i in range(full_rows, total_rows):
+        temp_info.append(' '.join(f'{files[i + j * total_rows]:{col_width}}'
+                                  for j in range(columns - 1)))
+    temp_info.append('\n')
+    return temp_info
+
+
+def handle_short_info(files, directories, args):
+    result_info = []
+    # Define the width of columns
+    max_length = 0
+    if directories:
+        max_length = max(max(len(item) for item in directories[d])
+                         for d in directories)
+    if files:
+        max_length = max(max_length, max(len(item) for item in files))
+    terminal_width = shutil.get_terminal_size().columns
+    if args.format == 'single-column' or args.one:
+        columns = 1
     else:
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(d_log_formatter)
-        d_log.addHandler(stream_handler)
-    return d_log
+        columns = terminal_width // (max_length + 1) or 1
+
+    if not files and len(directories) == 1:
+        d = list(directories.keys())[0]
+        if args.format == 'commas':
+            result_info.append(', '.join([item for item in directories[d]]))
+        elif args.format == 'vertical' or args.format == 'across':
+            result_info.extend(
+                columns_vertical(directories[d], columns, max_length + 1)
+            )
+        else:
+            result_info.extend(
+                columns_horizontal(directories[d], columns, max_length + 1)
+            )
+        log.debug(result_info)
+        return result_info
+
+    if files:
+        if args.format == 'commas':
+            result_info.append(', '.join([item for item in files]))
+        elif args.format == 'vertical' or args.format == 'across':
+            result_info.extend(
+                columns_vertical(files, columns, max_length + 1)
+            )
+        else:
+            result_info.extend(
+                columns_horizontal(files, columns, max_length + 1)
+            )
+    for d in directories:
+        result_info.append(f'{d}:')
+        if args.format == 'commas':
+            result_info.append(', '.join([item for item in directories[d]]))
+        elif args.format == 'vertical' or args.format == 'across':
+            result_info.extend(
+                columns_vertical(directories[d], columns, max_length + 1)
+            )
+        else:
+            result_info.extend(
+                columns_horizontal(directories[d], columns, max_length + 1)
+            )
+    log.debug(result_info)
+    return result_info
+
+
+def full_info(files, args, dir_='.'):
+    temp_info = []
+    for item in files:
+        f_info = {}
+        f_st = os.stat(os.path.join(CURRENT_DIR, dir_, item))
+        f_info['mpde'] = f'{stat.filemode(f_st.st_mode):10}'
+        f_info['nlink'] = f'{f_st.st_nlink:>3}'
+        f_info['uid'] = f'{f_st.st_uid:>3}'
+        size = f_st.st_size
+        if args.block_size:
+            size = ceil(size / args.block_size)
+        f_info['size'] = f'{size:>8}'
+        date = dt.datetime.fromtimestamp(f_st.st_mtime)
+        if (dt.datetime.now() - date).days / 30 > 6:
+            date_format = '%b %d  %Y'
+        else:
+            date_format = '%b %d %I:%M'
+        f_info['time'] = f'{date.strftime(date_format)} '
+        f_info['name'] = f'{item:<}'
+        temp_info.append(
+            ' '.join([f_info['mpde'], f_info['nlink'], f_info['uid'],
+                      f_info['size'], f_info['time'], f_info['name']])
+        )
+    temp_info.append('\n')
+    return temp_info
+
+
+def handle_full_info(files, directories, args):
+    result_info = []
+    if not files and len(directories) == 1:
+        d = list(directories.keys())[0]
+        result_info.extend(full_info(directories[d], args, d))
+        log.debug(result_info)
+        return result_info
+
+    if files:
+        result_info.extend(full_info(files, args))
+    for d in directories:
+        result_info.append(f'{d}:')
+        result_info.extend(full_info(directories[d], args, d))
+    log.debug(result_info)
+    return result_info
 
 
 def main():
@@ -85,7 +213,14 @@ def main():
     args = parse_arguments()
 
     # Create debug logger
-    log = create_debug_logger(args.log) if args.log else create_debug_logger()
+    if args.log:
+        file_handler = logging.FileHandler(args.log, mode='w')
+        file_handler.setFormatter(log_formatter)
+        log.addHandler(file_handler)
+    else:
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(log_formatter)
+        log.addHandler(stream_handler)
 
     log.debug(args)
 
