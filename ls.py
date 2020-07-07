@@ -26,6 +26,7 @@ import stat
 # from pprint import pprint as pp
 
 from math import ceil
+from typing import List
 
 
 NAME = 'simple_ls'
@@ -77,7 +78,9 @@ def parse_arguments():
     return args
 
 
-def columns_horizontal(files, columns, col_width):
+def columns_horizontal(files: List[str],
+                       columns: int,
+                       col_width: int) -> List[str]:
     temp_info = []
     full_rows = len(files) // columns
     full_columns = len(files) % columns
@@ -90,7 +93,9 @@ def columns_horizontal(files, columns, col_width):
     return temp_info
 
 
-def columns_vertical(files, columns, col_width):
+def columns_vertical(files: List[str],
+                       columns: int,
+                       col_width: int) -> List[str]:
     temp_info = []
     total_rows = ceil(len(files) / columns)
     columns = ceil(len(files) / total_rows)
@@ -106,6 +111,27 @@ def columns_vertical(files, columns, col_width):
     return temp_info
 
 
+def handle_files_group(files: List[str],
+                       columns: int,
+                       col_width: int, args) -> List[str]:
+    """
+    Define the form of the short info output about one group
+    of files/directories given.
+
+    :param files: list of files/directories
+    :param columns: number of columns for output the given list
+    :param col_width: width of each column
+    :param args: CLI arguments
+    :return: list of rows for output the information about given
+             group of files/directories
+    """
+    if args.format == 'commas':
+        return [', '.join([item for item in files])]
+    if args.format == 'horizontal' or args.format == 'across':
+        return columns_horizontal(files, columns, col_width)
+    return columns_vertical(files, columns, col_width)
+
+
 def handle_short_info(files, directories, args):
     result_info = []
     # Define the width of columns
@@ -115,6 +141,7 @@ def handle_short_info(files, directories, args):
                          for d in directories)
     if files:
         max_length = max(max_length, max(len(item) for item in files))
+    col_width = max_length + 1
     terminal_width = shutil.get_terminal_size().columns
     if args.format == 'single-column' or args.one:
         columns = 1
@@ -123,47 +150,22 @@ def handle_short_info(files, directories, args):
 
     if not files and len(directories) == 1:
         d = list(directories.keys())[0]
-        if args.format == 'commas':
-            result_info.append(', '.join([item for item in directories[d]]))
-        elif args.format == 'horizontal' or args.format == 'across':
-            result_info.extend(
-                columns_horizontal(directories[d], columns, max_length + 1)
-            )
-        else:
-            result_info.extend(
-                columns_vertical(directories[d], columns, max_length + 1)
-            )
+        result_info.extend(handle_files_group(directories[d],
+                                              columns, col_width, args))
         log.debug(result_info)
         return result_info
 
     if files:
-        if args.format == 'commas':
-            result_info.append(', '.join([item for item in files]))
-        elif args.format == 'horizontal' or args.format == 'across':
-            result_info.extend(
-                columns_horizontal(files, columns, max_length + 1)
-            )
-        else:
-            result_info.extend(
-                columns_vertical(files, columns, max_length + 1)
-            )
+        result_info.extend(handle_files_group(files, columns, col_width, args))
     for d in directories:
         result_info.append(f'{d}:')
-        if args.format == 'commas':
-            result_info.append(', '.join([item for item in directories[d]]))
-        elif args.format == 'horizontal' or args.format == 'across':
-            result_info.extend(
-                columns_horizontal(directories[d], columns, max_length + 1)
-            )
-        else:
-            result_info.extend(
-                columns_vertical(directories[d], columns, max_length + 1)
-            )
+        result_info.extend(handle_files_group(directories[d],
+                                              columns, col_width, args))
     log.debug(result_info)
     return result_info
 
 
-def full_info(files, args, dir_='.'):
+def full_info(files: List[str], args, dir_: str ='.') -> List[str]:
     temp_info = []
     for item in files:
         f_info = {}
