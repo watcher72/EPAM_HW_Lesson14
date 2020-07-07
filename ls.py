@@ -81,6 +81,16 @@ def parse_arguments():
 def columns_horizontal(files: List[str],
                        columns: int,
                        col_width: int) -> List[str]:
+    """
+    Generate the rows of the short info about group of files
+    in multi columns in horizontal order.
+
+    :param files: list of names files/directories
+    :param columns: number of columns for output the given list
+    :param col_width: width of each column
+    :return: list of rows for output the short information
+             of given files/directories
+    """
     temp_info = []
     full_rows = len(files) // columns
     full_columns = len(files) % columns
@@ -96,6 +106,16 @@ def columns_horizontal(files: List[str],
 def columns_vertical(files: List[str],
                        columns: int,
                        col_width: int) -> List[str]:
+    """
+    Generate the rows of the short info about group of files
+    in multi columns in vertical order.
+
+    :param files: list of names files/directories
+    :param columns: number of columns for output the given list
+    :param col_width: width of each column
+    :return: list of rows for output the short information
+             of given files/directories
+    """
     temp_info = []
     total_rows = ceil(len(files) / columns)
     columns = ceil(len(files) / total_rows)
@@ -133,6 +153,17 @@ def handle_files_group(files: List[str],
 
 
 def handle_short_info(files, directories, args):
+    """
+    Prepare the rows for output short information
+    about giver files/directories.
+
+    :param files: list of files, given in CLI arguments
+    :param directories: mapped list of directories,
+                        given in CLI argiments
+    :param args: CLI arguments
+    :return: list of rows for output the short information about given
+             group of files and directories
+    """
     result_info = []
     # Define the width of columns
     max_length = 0
@@ -166,6 +197,16 @@ def handle_short_info(files, directories, args):
 
 
 def full_info(files: List[str], args, dir_: str ='.') -> List[str]:
+    """
+    Generate the rows of the long info about each file/directory
+    in given list.
+
+    :param files: list of names files/directories
+    :param args: CLI arguments
+    :param dir_: the name of directory (by default - current directory)
+    :return: list of rows for output the long information
+             about each item of given group of files/directories
+    """
     temp_info = []
     for item in files:
         f_info = {}
@@ -193,6 +234,17 @@ def full_info(files: List[str], args, dir_: str ='.') -> List[str]:
 
 
 def handle_full_info(files, directories, args):
+    """
+    Prepare the rows for output long information
+    about giver files/directories.
+
+    :param files: list of files, given in CLI arguments
+    :param directories: mapped list of directories,
+                        given in CLI argiments
+    :param args: CLI arguments
+    :return: list of rows for output the long information about given
+             group of files and directories
+    """
     result_info = []
     if not files and len(directories) == 1:
         d = list(directories.keys())[0]
