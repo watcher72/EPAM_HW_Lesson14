@@ -82,10 +82,9 @@ def columns_horizontal(files, columns, col_width):
     full_rows = len(files) // columns
     full_columns = len(files) % columns
     for i in range(full_rows):
-        row = ' '.join(f'{files[i * columns + j]:{col_width}}'
-                       for j in range(columns))
-        temp_info.append(row)
-    temp_info.append(' '.join(f'{files[full_rows * columns + j]:{col_width}}'
+        temp_info.append(''.join(f'{files[i * columns + j]:{col_width}}'
+                                  for j in range(columns)))
+    temp_info.append(''.join(f'{files[full_rows * columns + j]:{col_width}}'
                               for j in range(full_columns)))
     temp_info.append('\n')
     return temp_info
@@ -126,13 +125,13 @@ def handle_short_info(files, directories, args):
         d = list(directories.keys())[0]
         if args.format == 'commas':
             result_info.append(', '.join([item for item in directories[d]]))
-        elif args.format == 'vertical' or args.format == 'across':
+        elif args.format == 'horizontal' or args.format == 'across':
             result_info.extend(
-                columns_vertical(directories[d], columns, max_length + 1)
+                columns_horizontal(directories[d], columns, max_length + 1)
             )
         else:
             result_info.extend(
-                columns_horizontal(directories[d], columns, max_length + 1)
+                columns_vertical(directories[d], columns, max_length + 1)
             )
         log.debug(result_info)
         return result_info
@@ -140,25 +139,25 @@ def handle_short_info(files, directories, args):
     if files:
         if args.format == 'commas':
             result_info.append(', '.join([item for item in files]))
-        elif args.format == 'vertical' or args.format == 'across':
+        elif args.format == 'horizontal' or args.format == 'across':
             result_info.extend(
-                columns_vertical(files, columns, max_length + 1)
+                columns_horizontal(files, columns, max_length + 1)
             )
         else:
             result_info.extend(
-                columns_horizontal(files, columns, max_length + 1)
+                columns_vertical(files, columns, max_length + 1)
             )
     for d in directories:
         result_info.append(f'{d}:')
         if args.format == 'commas':
             result_info.append(', '.join([item for item in directories[d]]))
-        elif args.format == 'vertical' or args.format == 'across':
+        elif args.format == 'horizontal' or args.format == 'across':
             result_info.extend(
-                columns_vertical(directories[d], columns, max_length + 1)
+                columns_horizontal(directories[d], columns, max_length + 1)
             )
         else:
             result_info.extend(
-                columns_horizontal(directories[d], columns, max_length + 1)
+                columns_vertical(directories[d], columns, max_length + 1)
             )
     log.debug(result_info)
     return result_info
